@@ -79,5 +79,5 @@ class Graph {
          */
         void load(std::ifstream* file); // Set to load files of type "rcsp" 
 
-
+        void Dijkstra(int source, int destination);
 };
