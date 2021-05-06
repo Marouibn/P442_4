@@ -17,8 +17,9 @@ int main(int argc, char **argv) {
     }
 
     std::ifstream file(argv[1]);
-
     Graph G(&file);
     file.close();
+
+    G.display_graph();
     return 0;
 }

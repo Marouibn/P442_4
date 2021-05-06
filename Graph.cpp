@@ -19,14 +19,23 @@ Graph::Graph(int _n, int _m, int _k) {
     m = _m;
     k = _k;
 
-    Adjacency = new double* [n];
     res_upper_lim = new double[k];
     res_lower_lim = new double[k];
+    Adjacency = new double* [n];
     nodes_consumption = new double* [n];
+    arcs_consumption = new double** [n];
 
     for (int i=0; i<n;i++) {
         Adjacency[i] = new double[n];
-        nodes_consumption[i] = new double [n];
+        nodes_consumption[i] = new double [k];
+        arcs_consumption[i] = new double* [n];
+        for (int j=0; j<n;j++) {
+            Adjacency[i][j] = -1.0;
+            arcs_consumption[i][j] = new double [k];
+            for (int l=0;l<k;l++) {
+                arcs_consumption[i][j][l] = -1.0;
+            }
+        }
     }
 }
 
@@ -115,4 +124,36 @@ int Graph::get_n() {
 
 int Graph::get_k() {
     return k;
+}
+
+void Graph::display_graph() {
+    std::cout << n << " " << m << " " << k << std::endl;
+    for (int i=0; i<k;i++) {
+        std::cout << res_lower_lim[i] << " ";
+    }
+    std::cout << std::endl;
+
+    for (int i=0; i<k;i++) {
+        std::cout << res_upper_lim[i] << " ";
+    }
+    std::cout << std::endl;
+
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<k;j++) {
+            std::cout << nodes_consumption[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<n;j++) {
+            if (Adjacency[i][j] != -1) {
+                std::cout << i+1 << " " << j+1 << " " << Adjacency[i][j] << " ";
+                for (int l=0; l<k;l++) {
+                    std::cout << arcs_consumption[i][j][l] << " ";
+                }
+                std::cout << std::endl;
+            }
+        }
+    }
 }

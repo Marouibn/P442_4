@@ -24,7 +24,6 @@
  * 
  */
 class Graph {
-    public:
     // Number of vertices in the graph
     int n;
 
@@ -51,6 +50,21 @@ class Graph {
 
 
     public:
+
+        /**
+         * Loads the data form a file into the graph class
+         * The files format supported is described in this source :
+         * http://people.brunel.ac.uk/~mastjjb/jeb/orlib/rcspinfo.html
+         * here is a brief description of file format
+         * 
+         *          Number of Vertices   |   Number of Arcs   |   Number of resources
+         *          For each resource, lower limit 
+         *          For each resource higher limit
+         *          For each vertex, the amount of each resource consumed when passing through the vertex
+         *          For each arc: source | Destination | Cost | For each resource the amount consumed in the arc
+         * 
+         * @param file An ifstream object representing a file that contains the data
+         */
         Graph(std::ifstream * file); // Constructs a graph from a file of type "rcsp"
         Graph(int _n, int _m, int _k); // Constructs an empty graph
         ~Graph();
@@ -86,4 +100,10 @@ class Graph {
         void load(std::ifstream* file); // Set to load files of type "rcsp" 
 
         void Dijkstra(int source, int destination);
+
+        /**
+         * Displays the file as it is given before loading it
+         * For debugging
+         */
+        void display_graph();
 };
