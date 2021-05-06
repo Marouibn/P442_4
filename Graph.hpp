@@ -13,8 +13,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "Arc.hpp"
-
 /**
  * We are going to use an adjacency matrix representation of the graph
  *
@@ -54,14 +52,14 @@ class Graph {
          * 
          * @returns The number of nodes n
          */
-        int get_n_nodes();
+        int get_n();
 
         /**
          * Getter for the number of resources
          * 
          * @returns The number of vertices
          */
-        int get_n_resources();
+        int get_k();
 
         /**
          * Loads the data form a file into the graph class

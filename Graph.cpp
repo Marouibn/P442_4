@@ -34,6 +34,7 @@ Graph::Graph(std::ifstream *file) {
     *file >> m;
     *file >> k;
 
+    std::cout << n << m << k << std::endl;
     // Start by declaring all the attributes
     Adjacency = new double* [n];
     res_quantity = new double[k];
@@ -45,10 +46,20 @@ Graph::Graph(std::ifstream *file) {
     }
 }
 
+Graph::~Graph() {
+    for (int i=0; i<n; i++) {
+        delete[] Adjacency[i];
+        delete[] nodes_consumption[i];
+    }
+    delete[] res_quantity;
+    delete[] Adjacency;
+    delete[] nodes_consumption;
+}
+
 int Graph::get_n() {
     return n;
 }
 
 int Graph::get_k() {
-    return n_resources;
+    return k;
 }
