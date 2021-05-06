@@ -2,7 +2,7 @@
 
 #include "Graph.hpp"
 
-void display(double* array, int length) {
+template <typename T> void display (T* array, int length) {
     for (int i=0; i<length;i++) {
         std::cout << array[i] << " ";
     }
@@ -23,6 +23,10 @@ int main(int argc, char **argv) {
 
     G.display_graph();
 
-    G.Dijkstra(0,1);
+    int parent[G.get_n()];
+    std::cout << "Starting test" << std::endl;
+    G.Dijkstra(0,parent);
+    std::cout << "End of test" << std::endl;
+    display(parent, G.get_n());
     return 0;
 }

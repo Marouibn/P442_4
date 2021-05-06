@@ -11,7 +11,9 @@
 
 #include <iostream>
 #include <string>
-#include <queue>
+#include <queue> // For priority queue
+#include <vector> // For vector
+#include <cfloat> // For DBL_MAX
 
 #include "Graph.hpp"
 #include "Arc.hpp"
@@ -128,6 +130,14 @@ int Graph::get_k() {
     return k;
 }
 
+int Graph::get_m() {
+    return m;
+}
+
+double Graph::get_cost(int start, int end) {
+    return Adjacency[start][end];
+}
+
 void Graph::display_graph() {
     std::cout << n << " " << m << " " << k << std::endl;
     for (int i=0; i<k;i++) {
@@ -160,11 +170,48 @@ void Graph::display_graph() {
     }
 }
 
-void Graph::Dijkstra(int source, int destination) {
-    auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()<b.get_cost();};
+void Graph::Dijkstra(int source, int* parent) {
+    double distance[n];
+    for (int i=0; i<n;i++) {
+        distance[i] = DBL_MAX;
+    }
+    distance[source] = 0;
 
-    std::priority_queue<Arc, std::vector<Arc>, decltype(Compare)> pq(Compare);
+    for (int i=0; i<n;i++) {
+        parent[i] = -1;
+    }
+    parent[source] = source;
+
+    // Creating the priority queue
+    auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()<b.get_cost();};
+    std::priority_queue<Arc, std::vector<Arc>, decltype( Compare ) > pq( Compare );
     std::cout << "Succesfully created priority queue !" << std::endl;
 
-    
+    // Adding the arcs from source to the queue
+    for (int i=0;i<n;i++) {
+        if (get_cost(source,i)>=0) {
+            pq.emplace(source, i, get_cost(source,i));
+        }
+    }
+
+    // Running a loop until the queue is empty
+    while (!pq.empty()) {
+        Arc arc = pq.top();
+
+        if (parent[arc.get_end()] != -1) { // The vertex has already been visited
+            pq.pop();
+            continue;
+        }
+
+        parent[arc.get_end()] = arc.get_start();
+        distance[arc.get_end()] = arc.get_cost();
+        pq.pop();
+
+        // Adding all the neighbors of the newly added arc to the priority queue
+        for (int i=0; i<n;i++) {
+            if (get_cost(arc.get_end(), i)>=0 && parent[i]==-1) {
+                pq.emplace(arc.get_end(),i, distance[arc.get_end()]+get_cost(arc.get_end(), i));
+            }
+        }
+    }
 }

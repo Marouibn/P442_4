@@ -78,11 +78,28 @@ class Graph {
         int get_n();
 
         /**
+         * Getter for the number of arcs
+         * 
+         * @returns The number of arcs
+         */
+        int get_m();
+
+        /**
          * Getter for the number of resources
          * 
          * @returns The number of vertices
          */
         int get_k();
+
+        /**
+         * Getter for the cost of the edge from start to end
+         * If no edge exists from start to end, return -1
+         * 
+         * @param start An integer representing the index of the start
+         * @param end An integer representing the index of the end
+         * @returns The cost of arc i->j, -1 if no such arc exists
+         */
+        double get_cost(int start, int end);
 
         /**
          * Loads the data form a file into the graph class
@@ -107,7 +124,7 @@ class Graph {
          * @param destination the index of the destination vertex
          * @return Yet to define
          */
-        void Dijkstra(int source, int destination);
+        void Dijkstra(int source, int* parent);
 
         /**
          * Displays the file as it is given before loading it
