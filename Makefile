@@ -19,3 +19,6 @@ test_sequential.o: test_sequential.cpp
 
 Graph.o: Graph.cpp
 	g++ -c -g -Werror Graph.cpp
+
+git:
+	git add --all;git commit -m "Automatic git";git push

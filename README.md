@@ -1,3 +1,1 @@
-# P442_4
-Project INF442: Shortest path problem <br>
-Mal lallak
+# Project INF442: Path related problems: Constrained shortest pathand thekshortest paths
