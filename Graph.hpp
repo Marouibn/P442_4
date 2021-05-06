@@ -24,6 +24,7 @@
  * 
  */
 class Graph {
+    public:
     // Number of vertices in the graph
     int n;
 
@@ -36,11 +37,18 @@ class Graph {
     // The adjacency matrix
     double** Adjacency;
 
-    // An array containing the available quantity of each resource (dimension = n_resources)
-    double* res_quantity;
+    // The lower limit for each resource on the chosen path
+    double* res_upper_lim;
+
+    // The lower limit for each resource on the chosen path
+    double* res_lower_lim;
 
     // The cost of traversing each node: The cell [i][j] represents how much of resource j in costs to pass through vertex i
     double** nodes_consumption;
+
+    // The cost of traversing an arc: The cell [i][j][k] represents how much of resource k is consumed when passing through arc of source i and destination j
+    double*** arcs_consumption;
+
 
     public:
         Graph(std::ifstream * file); // Constructs a graph from a file of type "rcsp"

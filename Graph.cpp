@@ -10,6 +10,7 @@
  */
 
 #include <iostream>
+#include <string>
 
 #include "Graph.hpp"
 
@@ -19,7 +20,8 @@ Graph::Graph(int _n, int _m, int _k) {
     k = _k;
 
     Adjacency = new double* [n];
-    res_quantity = new double[k];
+    res_upper_lim = new double[k];
+    res_lower_lim = new double[k];
     nodes_consumption = new double* [n];
 
     for (int i=0; i<n;i++) {
@@ -34,15 +36,61 @@ Graph::Graph(std::ifstream *file) {
     *file >> m;
     *file >> k;
 
-    std::cout << n << m << k << std::endl;
+    std::cout << "The number of edges: " << n << "\nThe number of arcs: " << m << "\nThe number of resources: " << k << std::endl;
+
     // Start by declaring all the attributes
+    // And initializing the Adjacency and arcs_consumption matrices to -1
+    res_upper_lim = new double[k];
+    res_lower_lim = new double[k];
     Adjacency = new double* [n];
-    res_quantity = new double[k];
     nodes_consumption = new double* [n];
+    arcs_consumption = new double** [n];
 
     for (int i=0; i<n;i++) {
         Adjacency[i] = new double[n];
         nodes_consumption[i] = new double [k];
+        arcs_consumption[i] = new double* [n];
+        for (int j=0; j<n;j++) {
+            Adjacency[i][j] = -1.0;
+            arcs_consumption[i][j] = new double [k];
+            for (int l=0;l<k;l++) {
+                arcs_consumption[i][j][l] = -1.0;
+            }
+        }
+    }
+
+    // Getting the lower limit on each resource from file
+    for (int i=0; i<k; i++) {
+        //std::cout << "Succesfully added stuff !" << std::endl;
+        *file >> res_lower_lim[i];
+    }
+
+    // Getting the upper limit on each resource from file
+    for (int i=0; i<k; i++) {
+        *file >> res_upper_lim[i];
+    }
+
+    // Getting the amount of resource consumed when passing through vertices
+    for (int i=0; i<n;i++) {
+        for (int j=0; j<k;j++) {
+            *file >> nodes_consumption[i][j];
+        }
+    }
+
+    // Getting the cost of each arc and resources consumed
+    int source;
+    int destination;
+    int counter = 0;
+    for (int i = 0; i<m;i++) {
+        //std::cout << "Trying some stuff" << std::endl;
+        *file >> source;
+        source--;
+        *file >> destination;
+        destination--;
+        *file >> Adjacency[source][destination];
+        for (int j=0; j<k;j++) {
+            *file >> arcs_consumption[source][destination][j];
+        }
     }
 }
 
@@ -50,8 +98,13 @@ Graph::~Graph() {
     for (int i=0; i<n; i++) {
         delete[] Adjacency[i];
         delete[] nodes_consumption[i];
+        for (int j=0;j<n;j++) {
+            delete[] arcs_consumption[i][j];
+        }
+        delete[] arcs_consumption[i];
     }
-    delete[] res_quantity;
+    delete[] res_upper_lim;
+    delete[] res_lower_lim;
     delete[] Adjacency;
     delete[] nodes_consumption;
 }
