@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "Arc.hpp"
 /**
  * We are going to use an adjacency matrix representation of the graph
  *
@@ -99,6 +100,13 @@ class Graph {
          */
         void load(std::ifstream* file); // Set to load files of type "rcsp" 
 
+
+        /**
+         * Applies Dijkstra's Algorithm on the graph
+         * @param source the index of the source vertex
+         * @param destination the index of the destination vertex
+         * @return Yet to define
+         */
         void Dijkstra(int source, int destination);
 
         /**

@@ -11,8 +11,10 @@
 
 #include <iostream>
 #include <string>
+#include <queue>
 
 #include "Graph.hpp"
+#include "Arc.hpp"
 
 Graph::Graph(int _n, int _m, int _k) {
     n = _n;
@@ -156,4 +158,13 @@ void Graph::display_graph() {
             }
         }
     }
+}
+
+void Graph::Dijkstra(int source, int destination) {
+    auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()<b.get_cost();};
+
+    std::priority_queue<Arc, std::vector<Arc>, decltype(Compare)> pq(Compare);
+    std::cout << "Succesfully created priority queue !" << std::endl;
+
+    
 }

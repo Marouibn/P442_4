@@ -16,10 +16,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    // Creating the graph
     std::ifstream file(argv[1]);
     Graph G(&file);
     file.close();
 
     G.display_graph();
+
+    G.Dijkstra(0,1);
     return 0;
 }
