@@ -2,6 +2,7 @@
 #include <iostream>
 
 class Arc {
+    public: // To remove !!
     int start;
     int end;
     double cost;
@@ -11,4 +12,5 @@ class Arc {
         int get_start();
         int get_end();
         double get_cost();
+        void diplay();
 };

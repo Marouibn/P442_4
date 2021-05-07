@@ -21,3 +21,7 @@ int Arc::get_end() {
 double Arc::get_cost() {
     return cost;
 }
+
+void Arc::diplay() {
+    std::cout << start << "-->" << end << " : " << cost << std::endl;
+}

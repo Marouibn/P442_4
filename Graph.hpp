@@ -66,7 +66,8 @@ class Graph {
          * 
          * @param file An ifstream object representing a file that contains the data
          */
-        Graph(std::ifstream * file); // Constructs a graph from a file of type "rcsp"
+        Graph(std::ifstream * file); // Constructs a graph directed from a file of type "rcsp"
+        Graph(std::ifstream * file, int directed); // Constructs an undirected graph if directed = 0
         Graph(int _n, int _m, int _k); // Constructs an empty graph
         ~Graph();
         
@@ -102,6 +103,14 @@ class Graph {
         double get_cost(int start, int end);
 
         /**
+         * Setter for the cost of edge i->j
+         * 
+         * @param start The index of source of the edge
+         * @param end The index of destination of edge
+         */
+        void set_cost(int start, int end, double cost);
+ 
+        /**
          * Loads the data form a file into the graph class
          * The files format supported is described in this source :
          * http://people.brunel.ac.uk/~mastjjb/jeb/orlib/rcspinfo.html
@@ -131,4 +140,11 @@ class Graph {
          * For debugging
          */
         void display_graph();
+
+        /**
+         * Gets the path from the parent array
+         * 
+         * @param destination The destination of the path
+         */
+        void get_path(int destination, int * parent);
 };

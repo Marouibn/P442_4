@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     // Creating the graph
     std::ifstream file(argv[1]);
-    Graph G(&file);
+    Graph G(&file,0);
     file.close();
 
     //G.display_graph();
@@ -30,10 +30,33 @@ int main(int argc, char **argv) {
     std::cout << "End of test" << std::endl;
     display(parent, G.get_n());
 
-    double min = DBL_MAX;
-    int 
-    for (int i=0; i<G.get_n();i++) {
-        if ( )
-    }
+    G.get_path(0, parent);
+    /*Graph G(5,7,0);
+    G.set_cost(0,1,6.0);
+    G.set_cost(1,0,6.0);
+    G.set_cost(0,4,1.0);
+    G.set_cost(4,0,1.0);
+    G.set_cost(4,1,2.0);
+    G.set_cost(1,4,2.0);
+    G.set_cost(4,3,1.0);
+    G.set_cost(3,4,1.0);
+    G.set_cost(1,3,2.0);
+    G.set_cost(3,1,2.0);
+    G.set_cost(1,2,5.0);
+    G.set_cost(2,1,5.0);
+    G.set_cost(2,3,5.0);
+    G.set_cost(3,2,5.0);
+    
+    //G.display_graph();
+
+    int parent[5];
+
+    G.Dijkstra(0, parent);
+
+    display(parent, 5);
+
+    std::cout << "The path from 0 to 2" << std::endl;
+    G.get_path(2,parent);*/
+
     return 0;
 }
