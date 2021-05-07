@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cfloat>
 
 #include "Graph.hpp"
 
@@ -21,12 +22,18 @@ int main(int argc, char **argv) {
     Graph G(&file);
     file.close();
 
-    G.display_graph();
+    //G.display_graph();
 
     int parent[G.get_n()];
     std::cout << "Starting test" << std::endl;
-    G.Dijkstra(0,parent);
+    G.Dijkstra(1,parent);
     std::cout << "End of test" << std::endl;
     display(parent, G.get_n());
+
+    double min = DBL_MAX;
+    int 
+    for (int i=0; i<G.get_n();i++) {
+        if ( )
+    }
     return 0;
 }
