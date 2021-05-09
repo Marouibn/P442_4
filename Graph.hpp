@@ -130,10 +130,17 @@ class Graph {
         /**
          * Applies Dijkstra's Algorithm on the graph
          * @param source the index of the source vertex
-         * @param destination the index of the destination vertex
-         * @return Yet to define
+         * @param parent An array to modify. Cell [i] contains the before last vertex in the path form s to i
          */
         void Dijkstra(int source, int* parent);
+
+        /**
+         * Applies parallel SSSP algorithm on the graph
+         * @param source the index of the source vertex
+         * @param parent An array to modify. Cell [i] contains the before last vertex in the path form s to i
+         * @param n_pu number of processing units
+         */
+        void parallel_SSSP(int source, int* parent, int n_pu);
 
         /**
          * Displays the file as it is given before loading it

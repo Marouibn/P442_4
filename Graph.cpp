@@ -14,6 +14,8 @@
 #include <queue> // For priority queue
 #include <vector> // For vector
 #include <cfloat> // For DBL_MAX
+#include <thread>
+#include <time.h> // For srand seed
 
 #include "Graph.hpp"
 #include "Arc.hpp"
@@ -309,6 +311,40 @@ void Graph::Dijkstra(int source, int* parent) {
             }
         }
     }
+}
+
+void Graph::parallel_SSSP(int source, int* parent, int n_pu) {
+    // Define which PU deals with which node. ind[i] is the PU that deals with vertex i
+    // Each vertex is randomly given to a PU from 0 to n_pu-1
+    int ind[n];
+    srand(time(NULL));
+    for (int i=0; i<n;i++) {
+        ind[i] = rand()%n_pu;
+    }
+    
+    // Creating the queues
+    auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()>b.get_cost();};
+    std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )>* Q[n_pu];
+    std::vector<std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )>* > Qstar;
+    for (int i=0;i<n_pu;i++) {
+        Q[i] = new std::priority_queue<Arc, std::vector<Arc>, decltype(Compare)> (Compare);
+        Qstar[i] = new std::priority_queue<Arc, std::vector<Arc>, decltype(Compare)> (Compare);
+    }
+
+    // Initializing the queues
+    Q[ind[source]]->emplace(source, source, 0);
+    Qstar[ind[source]]-> emplace(source, source, 0); // a modifier
+
+
+    // Creating the threads
+    std::thread threads[n_pu];
+
+    while (1) {
+        for (int i=0; i<n_pu; i++) {
+            threads[i] = pthread_create(Thefunction, the args); 
+        }
+    }
+
 }
 
 void Graph::set_cost(int start, int end, double cost) {
