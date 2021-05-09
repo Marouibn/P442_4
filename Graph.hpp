@@ -24,6 +24,7 @@
  * The cell [i][j] contains cost of directed edge i->j if exists, -1 otherwise
  * 
  */
+
 class Graph {
     // Number of vertices in the graph
     int n;
@@ -133,6 +134,15 @@ class Graph {
          * @param parent An array to modify. Cell [i] contains the before last vertex in the path form s to i
          */
         void Dijkstra(int source, int* parent);
+
+        /**
+         * The function executed in each thread
+         * it performs steps 2 -> ??
+         * 
+         * @param index The index of the thread (and the priority queues)
+         * @param threshold All nodes with tent. dist. lower or equal to threshold are removed from Q[i] and Qstar[i]
+         */
+        void parallel_thread_func(int index,std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )> &q, double threshold, std::vector<Arc*> &Req, std::mutex &mx);
 
         /**
          * Applies parallel SSSP algorithm on the graph

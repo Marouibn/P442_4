@@ -14,8 +14,9 @@
 #include <queue> // For priority queue
 #include <vector> // For vector
 #include <cfloat> // For DBL_MAX
-#include <thread>
 #include <time.h> // For srand seed
+#include <thread>
+#include <mutex>
 
 #include "Graph.hpp"
 #include "Arc.hpp"
@@ -270,7 +271,7 @@ void Graph::Dijkstra(int source, int* parent) {
     parent[source] = source;
 
     // Creating the priority queue
-    auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()>b.get_cost();};
+    //auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()>b.get_cost();};
     std::priority_queue<Arc, std::vector<Arc>, decltype( Compare ) > pq( Compare );
     std::cout << "Succesfully created priority queue !" << std::endl;
 
@@ -313,6 +314,27 @@ void Graph::Dijkstra(int source, int* parent) {
     }
 }
 
+//auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()>b.get_cost();};
+
+
+void Graph::parallel_thread_func(int index,std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )> &q, double threshold, std::vector<Arc*> &Req, std::mutex &mx) {
+    // Step 1 is done outside of the threads
+
+    // Step 2 and 3
+    while (q.top().cost > threshold) {
+        const Arc* parc = &q.top();
+        int vertex = parc->end;
+        for(int w=0;w<n;w++) {
+            mx.lock();
+            if (Adjacency[vertex][w] != -1.0)
+                Req.push_back(new Arc(vertex, w, parc->cost+Adjacency[vertex][w]));
+            mx.unlock();
+        }
+
+    }
+
+}
+
 void Graph::parallel_SSSP(int source, int* parent, int n_pu) {
     // Define which PU deals with which node. ind[i] is the PU that deals with vertex i
     // Each vertex is randomly given to a PU from 0 to n_pu-1
@@ -323,27 +345,34 @@ void Graph::parallel_SSSP(int source, int* parent, int n_pu) {
     }
     
     // Creating the queues
-    auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()>b.get_cost();};
+    //auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()>b.get_cost();};
     std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )>* Q[n_pu];
-    std::vector<std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )>* > Qstar;
+    std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )>* Qstar[n_pu];
     for (int i=0;i<n_pu;i++) {
         Q[i] = new std::priority_queue<Arc, std::vector<Arc>, decltype(Compare)> (Compare);
         Qstar[i] = new std::priority_queue<Arc, std::vector<Arc>, decltype(Compare)> (Compare);
     }
+
+    // The list of requests, ie: deleted nodes
+    std::vector<Arc>* R;
 
     // Initializing the queues
     Q[ind[source]]->emplace(source, source, 0);
     Qstar[ind[source]]-> emplace(source, source, 0); // a modifier
 
 
-    // Creating the threads
+    // Creating the threads, the mutex
     std::thread threads[n_pu];
+    std::mutex mx;
 
-    while (1) {
+    /*while (1) {
+        // Step 1: We look for the minimal 
+        find_min();
+        // 
         for (int i=0; i<n_pu; i++) {
-            threads[i] = pthread_create(Thefunction, the args); 
+            threads[i] = pthread_create(Thefunction, theArgs, double threshold);
         }
-    }
+    }*/
 
 }
 
