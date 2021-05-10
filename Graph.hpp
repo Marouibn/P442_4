@@ -142,7 +142,7 @@ class Graph {
          * @param index The index of the thread (and the priority queues)
          * @param threshold All nodes with tent. dist. lower or equal to threshold are removed from Q[i] and Qstar[i]
          */
-        void parallel_thread_func(int index,std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )> &q, double threshold, std::vector<Arc*> &Req, std::mutex &mx);
+        void parallel_thread_func(int index, int n_pu,std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )> &q,std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )> &qstar, int* ind,double threshold, std::vector<Arc*> &Req, double *tent, int* dequeued, int* closest_out, double* delta_out, std::vector<Arc>* B, std::mutex &mx, int &step23, int &step4, std::condition_variable &cond23, std::condition_variable &cond4);
 
         /**
          * Applies parallel SSSP algorithm on the graph

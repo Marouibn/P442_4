@@ -17,6 +17,7 @@
 #include <time.h> // For srand seed
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 #include "Graph.hpp"
 #include "Arc.hpp"
@@ -317,7 +318,7 @@ void Graph::Dijkstra(int source, int* parent) {
 //auto Compare = [] (Arc &a, Arc &b) {return a.get_cost()>b.get_cost();};
 
 
-void Graph::parallel_thread_func(int index,std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )> &q, double threshold, std::vector<Arc*> &Req, std::mutex &mx) {
+void Graph::parallel_thread_func(int index, int n_pu,std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )> &q,std::priority_queue<Arc, std::vector<Arc>, decltype( Compare )> &qstar, int* ind,double threshold, std::vector<Arc*> &Req, double *tent, int* dequeued, int* closest_out, double* delta_out, std::vector<Arc>* B, std::mutex &mx, int &step23, int &step4, std::condition_variable &cond23, std::condition_variable &cond4) {
     // Step 1 is done outside of the threads
 
     // Step 2 and 3
@@ -330,9 +331,43 @@ void Graph::parallel_thread_func(int index,std::priority_queue<Arc, std::vector<
                 Req.push_back(new Arc(vertex, w, parc->cost+Adjacency[vertex][w]));
             mx.unlock();
         }
-
     }
+    step23++;
+    cond23.notify_one();
+    //Making sure all the threads have goen through steps 2 and 3
+    std::unique_lock<std::mutex> ul(mx);
+    cond23.wait(ul, [step23, n_pu] { return (step23 == n_pu) ? true : false;});
+    cond23.notify_all();
 
+    // One thread performs step 4 - The first one that got notified works
+    if (!step4) {
+        step4++;
+        for (int i=0; i<Req.size();i++) {
+            B[ind[Req[i]->end]].push_back(*Req[i]);
+        }
+    }
+    ul.unlock();
+
+    for (int i=0;i<B[index].size();i++) {
+        int vertex = B[index][i].end;
+        if (B[index][i].cost < tent[vertex]) {
+            tent[vertex] = B[index][i].cost;
+            q.emplace(B[index][i].start,B[index][i].end,B[index][i].cost);
+            if (!closest_out[vertex]) { // We haven't yet computed the closest outgoing neighbor, we compute it
+                int closest = 0;
+                double distance = Adjacency[vertex][0];
+                for (int j=1; j<n;j++) {
+                    if (Adjacency[vertex][j] >= -1.0 && Adjacency[vertex][j] < distance) {
+                        closest = j;
+                        distance = Adjacency[vertex][j];
+                    }
+                }
+                closest_out[vertex] = closest;
+                delta_out[vertex] = distance;
+            }
+            qstar.emplace(vertex, closest_out[vertex], tent[vertex]+delta_out[vertex]);
+        }
+    }
 }
 
 void Graph::parallel_SSSP(int source, int* parent, int n_pu) {
@@ -354,7 +389,30 @@ void Graph::parallel_SSSP(int source, int* parent, int n_pu) {
     }
 
     // The list of requests, ie: deleted nodes
-    std::vector<Arc>* R;
+    std::vector<Arc>* Req;
+
+    // A list to keep tentative distances - Useful since there is no DecreaseKey
+    double tent[n];
+    for (int i=0;i<n;i++) {
+        tent[i] = DBL_MAX;
+    }
+
+    // A list of buffer arrays of step 4
+    std::vector<Arc> B[n_pu];
+
+    // A vector to keep the distance to closest outgoing neighbor, and a vector of indexes of closest outgoing neighbors
+    double delta_out[n];
+    int closest_out[n];
+    for (int i=0; i<n;i++) {
+        delta_out[i] = NULL;
+        closest_out[i] = NULL;
+    }
+
+    // A vector to check if member has been dequeued - Since we have no decreasekey
+    int dequeued[n];
+    for (int i=0; i<n;i++) {
+        dequeued[i] = 0; // Initially no element has been dequeued
+    }
 
     // Initializing the queues
     Q[ind[source]]->emplace(source, source, 0);
@@ -365,6 +423,12 @@ void Graph::parallel_SSSP(int source, int* parent, int n_pu) {
     std::thread threads[n_pu];
     std::mutex mx;
 
+    // Creating the condition variables
+    int step23 = 0;
+    int step4 = 0;
+    std::condition_variable cond23; // Verifies that all the threads have done the steps 2 and 3
+    std::condition_variable cond4; // Verifies that step 3 is over
+    
     /*while (1) {
         // Step 1: We look for the minimal 
         find_min();
